@@ -100,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         numberPicker.setMinValue(0);
         numberPicker.setMaxValue(18);
         numberPicker.setValue(2);
+        numberPicker.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
         numberPicker.setBackgroundColor(numberPickerBackgroundColor);
         velocityView = (TextView) findViewById(R.id.velocityView);
     }

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
+
+    <org.osmdroid.views.MapView
+        android:id="@+id/map"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" />
+
+    <TextView
+        android:id="@+id/longitude"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentStart="true"
+        android:gravity="center"
+        android:text="Long"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="#FFFFFFFF" />
+
+    <TextView
+        android:id="@+id/latitude"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/longitude"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:gravity="center"
+        android:text="Lat"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="#FFFFFFFF" />
+
+    <Button
+        android:id="@+id/download"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_above="@+id/latitude"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/download"
+        android:text="" />
+
+    <Button
+        android:id="@+id/follow"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignBottom="@+id/download"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:background="@drawable/follow2"
+        android:text="" />
+
+    <NumberPicker
+        android:id="@+id/numberPicker"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/latitude" />
+
+    <TextView
+        android:id="@+id/velocityView"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_above="@+id/latitude"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/download"
+        android:background="@drawable/velocity"
+        android:gravity="center"
+        android:text="0"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+
+</RelativeLayout>

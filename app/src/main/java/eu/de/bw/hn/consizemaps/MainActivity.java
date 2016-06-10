@@ -136,11 +136,22 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
         downloadZoomScale = numberPicker.getValue();
 
+        int minZoomScale = map.getZoomLevel() - downloadZoomScale;
+        if (minZoomScale < 0) {
+            minZoomScale = 0;
+        }
+        int maxZoomScale = map.getZoomLevel() + downloadZoomScale;
+
+        if (maxZoomScale > 18) {
+            maxZoomScale = 18;
+        }
+        final int minZoom = minZoomScale, maxZoom = maxZoomScale;
+
         AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
         alertDialog.setTitle("Download Map Tiles");
         alertDialog.setMessage("This will download the map tiles for the current field of view, for zoom levels " +
-                (map.getZoomLevel() - downloadZoomScale) +
-                "-" + (map.getZoomLevel() + downloadZoomScale) +
+                minZoom +
+                "-" + maxZoom +
                 "\n\nCurrent zoom level is: " + map.getZoomLevel() +
                 "\nDownload Zoom Scale is: " + downloadZoomScale + "\n(adjust at the bottom right)");
         alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
@@ -149,9 +160,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                         dialog.dismiss();
 
                         CacheManager cacheManager = new CacheManager(map);
-                        int zoomMin = map.getZoomLevel() - downloadZoomScale;
-                        int zoomMax = map.getZoomLevel() + downloadZoomScale;
-                        cacheManager.downloadAreaAsync(context, map.getBoundingBox(), zoomMin, zoomMax);
+                        cacheManager.downloadAreaAsync(context, map.getBoundingBox(), minZoom, maxZoom);
                     }
                 });
         alertDialog.show();

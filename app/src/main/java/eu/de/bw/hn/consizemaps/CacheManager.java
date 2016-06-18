@@ -36,23 +36,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.UnknownHostException;
 
-/**
- * Provides various methods for managing the local filesystem cache of osmdroid tiles: <br>
- * - Dowloading of tiles inside a specified area, <br>
- * - Cleaning of tiles inside a specified area,<br>
- * - Information about cache capacity and current cache usage. <br>
- * <p/>
- * Important note 1: <br>
- * These methods only make sense for a MapView using an OnlineTileSourceBase:
- * bitmap tiles downloaded from urls. <br>
- * <p/>
- * Important note 2 - about Bulk Downloading:<br>
- * When using OSM Mapnik tile server as the tile source, take care about OSM Tile usage policy
- * (http://wiki.openstreetmap.org/wiki/Tile_usage_policy).
- * Do not let to end-users the ability to download significant areas of tiles. <br>
- *
- * @author M.Kergall
- */
 public class CacheManager {
 
     protected final MapTileProviderBase mTileProvider;

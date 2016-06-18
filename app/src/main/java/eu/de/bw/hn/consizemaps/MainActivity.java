@@ -9,11 +9,14 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Debug;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.NumberPicker;
@@ -30,18 +33,22 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements LocationListener, View.OnClickListener {
+public class
+MainActivity extends AppCompatActivity implements LocationListener, View.OnClickListener {
 
     private final static String TAG = "MainActivity";
     private MapView map;
-    private TextView latitudeView, longitudeView, velocityView;
+    private TextView latitudeView, longitudeView, velocityView, altitudeView;
     private Button downloadButton, followButton;
     private NumberPicker numberPicker;
+    private static final boolean DEBUG = true;
     private int textViewBackgroundColor = Color.argb(150, 0, 0, 0);
     private int numberPickerBackgroundColor = Color.argb(150, 255, 255, 255);
     private boolean follow = true;
     private int downloadZoomScale = 2;
-    int oldVelocity = 0;
+    private int oldVelocity = 0;
+    private double oldAltitude = 0, oldBearing;
+    private Location currentLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,6 +110,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         numberPicker.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
         numberPicker.setBackgroundColor(numberPickerBackgroundColor);
         velocityView = (TextView) findViewById(R.id.velocityView);
+        altitudeView = (TextView) findViewById(R.id.altitudeView);
     }
 
     // START PERMISSION CHECK
@@ -168,13 +176,26 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
     @Override
     public void onLocationChanged(Location location) {
-        Log.d(TAG, "onLocationChanged Lat: " + location.getLatitude() + " | Long: " + location.getLongitude());
-        //Marker marker = new Marker(location.getLatitude(), location.getLongitude());
+
+        currentLocation = location;
+
+        if (DEBUG) {
+            Log.d(TAG, "onLocationChanged Lat: " + location.getLatitude() + " | Long: " + location.getLongitude());
+            Log.d(TAG, "Bearing: " + location.getBearing());
+            Log.d(TAG, "Altitude: " + location.getAltitude());
+        }
+//        Marker marker = new Marker(location.getLatitude(), location.getLongitude());
         int velocity = (int) ((location.getSpeed() * 3600) / 1000);
         if (oldVelocity != velocity) {
-            Log.d(TAG, "Current velocity: " + velocity + " km/h");
+            if (DEBUG)
+                Log.d(TAG, "Current velocity: " + velocity + " km/h");
             oldVelocity = velocity;
             velocityView.setText(String.valueOf(velocity));
+        }
+
+        if (oldAltitude != location.getAltitude()) {
+            oldAltitude = location.getAltitude();
+            altitudeView.setText(String.valueOf((int) location.getAltitude()));
         }
 
         if (follow) {
@@ -187,17 +208,20 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
-        Log.d(TAG, "onStatusChanged");
+        if (DEBUG)
+            Log.d(TAG, "onStatusChanged");
     }
 
     @Override
     public void onProviderEnabled(String provider) {
-        Log.d(TAG, "onProviderEnabled");
+        if (DEBUG)
+            Log.d(TAG, "onProviderEnabled");
     }
 
     @Override
     public void onProviderDisabled(String provider) {
-        Log.d(TAG, "onProviderDisabled");
+        if (DEBUG)
+            Log.d(TAG, "onProviderDisabled");
     }
 
     @Override
@@ -218,5 +242,46 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                 }
                 break;
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            if (DEBUG)
+                Log.d(TAG, "GPS Info pressed!");
+            if (currentLocation != null) {
+                AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+                alertDialog.setTitle("GPS Info");
+                alertDialog.setMessage("Latitude: " + currentLocation.getLatitude() + "\n\nLongitude: "
+                        + currentLocation.getLongitude() + "\n\nAltitude: " + (int) currentLocation.getAltitude() + " m" +
+                        "\n\nVelocity: " + ((int) currentLocation.getSpeed() * 3.6) + " km/h" +
+                        "\n\nGPS bearing: " + currentLocation.getBearing() + "°");
+                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                alertDialog.show();
+            } else {
+                Toast.makeText(this, "No GPS connection!", Toast.LENGTH_SHORT).show();
+            }
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }
